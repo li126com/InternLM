@@ -5,6 +5,7 @@ import socket
 import time
 import traceback
 from functools import partial
+import gc
 
 import torch
 import torch.distributed as dist
@@ -288,6 +289,7 @@ def main(args):
 
 
 if __name__ == "__main__":
+    gc.disable()
     args = parse_args()
     hostname = socket.gethostname()
 
