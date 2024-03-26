@@ -313,7 +313,9 @@ if __name__ == "__main__":
     hostname = socket.gethostname()
 
     # initialize distributed environment
-    initialize_distributed_env(config=args.config, launcher=args.launcher, master_port=args.port, seed=args.seed)
+    initialize_distributed_env(
+        config=args.config, launcher=args.launcher, master_port=args.port, seed=args.seed, backend=args.backend
+    )
     assert hasattr(gpc, "config") and gpc.config is not None
 
     # initialize monitor manager context
