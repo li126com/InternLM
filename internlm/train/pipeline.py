@@ -63,7 +63,7 @@ from internlm.model.ops.norm import RMSNorm
 from internlm.model.registry import register_model_initializer
 from internlm.monitor import set_env_var
 from internlm.monitor.monitor import monitor_manager as mm
-from internlm.solver.optimizer import FSDPadaptOptimizer, HybridZeroOptimizer
+from internlm.solver.optimizer import FSDPadaptOptimizer, HybridZeroOptimizer, HybridZeroOptimizer_v2
 from internlm.solver.optimizer.compatible_adamw import new_compatible_adamw
 from internlm.solver.schedulers.beta2_scheduler import Beta2Scheduler
 from internlm.solver.schedulers.lr_scheduler import FineTuneCosineAnnealingWarmupLR
@@ -370,13 +370,22 @@ def initialize_optimizer(model: Union[nn.Module, nn.ModuleList], isp_communicato
         param_bcast_sync_handler = None
 
     if not gpc.config.parallel.zero1.fsdp:
-        optimizer = HybridZeroOptimizer(
-            naive_optimizer,
-            grad_scal_cfg=grad_scal_cfg,
-            zero_cfg=zero_cfg,
-            param_bcast_sync_handler=param_bcast_sync_handler,
-            isp_communicator=isp_communicator,
-        )
+        if not gpc.config.hybrid_zero_optimizer.new_version:
+            optimizer = HybridZeroOptimizer(
+                naive_optimizer,
+                grad_scal_cfg=grad_scal_cfg,
+                zero_cfg=zero_cfg,
+                param_bcast_sync_handler=param_bcast_sync_handler,
+                isp_communicator=isp_communicator,
+            )
+        else:
+            optimizer = HybridZeroOptimizer_v2(
+                naive_optimizer,
+                grad_scal_cfg=grad_scal_cfg,
+                zero_cfg=zero_cfg,
+                param_bcast_sync_handler=param_bcast_sync_handler,
+                isp_communicator=isp_communicator,
+            )
     else:
         optimizer = FSDPadaptOptimizer(
             naive_optimizer,

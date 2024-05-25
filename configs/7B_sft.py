@@ -100,6 +100,8 @@ hybrid_zero_optimizer = dict(
     reduce_bucket_size=512 * 1024 * 1024,
     # grad clipping
     clip_grad_norm=1.0,
+    # whether use new optm
+    new_version=False,
 )
 
 loss = dict(
